@@ -1,4 +1,3 @@
-=========
 [![Maintenance](https://img.shields.io/maintenance/yes/2022.svg?style=flat-square)]()
 # Microsoft Sentinel - Analytics Rules Validator
 
@@ -17,7 +16,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Validate Sentinel Analytics Rules
-        uses: f-bader/validate-detections@v1
+        uses: f-bader/validate-detections@v2
         with:
           filesPath: templates
           logLevel: Minimal

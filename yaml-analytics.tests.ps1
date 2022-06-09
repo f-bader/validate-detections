@@ -50,7 +50,7 @@ Describe "Detections" {
 
     Context "KQL Syntax" {
 
-        It 'Is properties use camelCasing | <Name>' -TestCases $testCases {
+        It 'Query contains valid KQL | <Name>' -TestCases $testCases {
             param (
                 $file,
                 $yamlObject
