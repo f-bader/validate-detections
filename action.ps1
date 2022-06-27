@@ -8,11 +8,9 @@ param (
 
 ## Install NuGet for KQL parsing
 ## https://stackoverflow.com/questions/70166382/validate-kusto-query-before-submitting-it
-if (-not (Get-PackageProvider -Name 'NuGet')) {
-    Write-Output "Install PackageProvider NuGet"
-    Install-PackageProvider -Name NuGet -Scope CurrentUser -Force
+if (-not (Get-PackageSource -Name 'nuget.org')) {
     Write-Output "Register PackageSource nuget.org"
-    Register-PackageSource -Name nuget.org -ProviderName NuGet  -Location https://www.nuget.org/api/v2 -Force
+    Register-PackageSource -Name "nuget.org" -ProviderName NuGet  -Location https://www.nuget.org/api/v2 -Force
 }
 
 ## Make sure any packages we depend on are installed
