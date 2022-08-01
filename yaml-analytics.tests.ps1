@@ -56,7 +56,7 @@ Describe "Detections" {
                 $yamlObject
             )
 
-            $kustoParsing=[Kusto.Language.KustoCode]::Parse($yamlObject.query)
+            $kustoParsing = [Kusto.Language.KustoCode]::Parse($yamlObject.query)
             $kustoParsing.getDiagnostics() | Should -BeNullOrEmpty
         }
     }
@@ -216,6 +216,8 @@ Describe "Detections" {
             )
 
             foreach ($technique in $yamlObject.relevantTechniques) {
+                #Remove sub technique
+                $technique = $technique -replace '\..*$'
                 $attack.id | Should -Contain $technique
             }
         }
@@ -262,17 +264,10 @@ Describe "Detections" {
             $techniques = $yamlObject.relevantTechniques
 
             foreach ($technique in $techniques) {
-                $tactics = @( $attack | Where-Object id -eq "$technique" ).tactics -split ',' | Sort-Object -Unique #2 + #1
-                [int]$totalTactics = $totalTactics + $tactics.count
-                Write-Output "Total Tactics $tactics = [$totalTactics]"
-                foreach ($tactic in $tactics) {
-                    if ($tactic -in $yamlObject.tactics) {
-                        [int]$i = $i + $tactics.count
-                        Write-Output "Current Count is with $tactics [$i]"
-                    }
-                }
-                Write-Output "$i"
-                if ($i -lt $totalTactics) {
+                #Remove sub technique
+                $technique = $technique -replace '\..*$'
+                $tactics = @( $attack | Where-Object id -eq "$technique" ).tactics -split ',' | Sort-Object -Unique
+                foreach ( $tactic in $tactics) {
                     $tactic | Should -BeIn $yamlObject.tactics -Because "[$($technique)] is specified in 'relevantTechniques'"
                 }
             }
@@ -377,7 +372,7 @@ Describe "Detections" {
                 $yamlObject
             )
 
-            if($yamlObject.kind -eq 'Scheduled') {
+            if ($yamlObject.kind -eq 'Scheduled') {
                 $yamlObject.queryFrequency | Should -MatchExactly $regEx_yamlTime
             }
         }
