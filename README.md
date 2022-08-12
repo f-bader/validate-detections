@@ -16,7 +16,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Validate Sentinel Analytics Rules
-        uses: f-bader/validate-detections@v3
+        uses: f-bader/validate-detections@v2
         with:
           filesPath: templates
           logLevel: Minimal
