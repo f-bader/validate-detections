@@ -3,14 +3,14 @@ param (
     [string]$FilesPath,
     
     [parameter(Mandatory = $false)]
-    [string]$logLevel
+    [string]$logLevel="Normal"
 )
 
 ## Install NuGet for KQL parsing
 ## https://stackoverflow.com/questions/70166382/validate-kusto-query-before-submitting-it
 if (-not (Get-PackageSource -Name 'nuget.org')) {
     Write-Output "Register PackageSource nuget.org"
-    Register-PackageSource -Name "nuget.org" -ProviderName NuGet  -Location https://www.nuget.org/api/v2 -Force
+    Register-PackageSource -Name "nuget.org" -ProviderName NuGet  -Location https://www.nuget.org/api/v2 -Force -EA 0
 }
 
 ## Make sure any packages we depend on are installed
@@ -54,7 +54,7 @@ $dllPath = (Split-Path -Path $nuGetPath) + "\lib\netstandard2.0\Kusto.Language.d
 
 if ($FilesPath -ne '.') {
     Write-Output  "Selected filespath is [$FilesPath]"
-    Get-ChildItem "*.tests.ps1" | Copy-Item -Destination $FilesPath -Force
+    $CopiedFiles = Get-ChildItem "*.tests.ps1" | Copy-Item -Destination $FilesPath -Force -PassThru
     $global:detectionsPath = $FilesPath
 }
 
@@ -75,3 +75,6 @@ $PesterConfig = [PesterConfiguration]@{
 }
 
 Invoke-Pester -Configuration $PesterConfig
+
+# Cleanup test file
+$CopiedFiles | Remove-Item -Force
