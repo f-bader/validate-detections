@@ -151,6 +151,16 @@ Describe "Detections" {
             }
         }
 
+        It 'Kind Scheduled should be case sensitive | <Name>' -TestCases $testCases {
+            param (
+                $file,
+                $yamlObject
+            )
+            if ($yamlObject.kind -eq 'Scheduled') {
+                $yamlObject.kind | Should -MatchExactly "Scheduled"
+            }
+        }
+
         It 'TriggerOperator value should be in LowerCase | <Name>' -TestCases $testCases {
             param (
                 $file,
