@@ -246,17 +246,6 @@ Describe "Detections" {
             }
         }
 
-        It 'Technique should be not be empty | <Name>' -TestCases $testCases {
-            param (
-                $file,
-                $properties
-            )
-            $techniques = $properties.techniques
-
-            $techniques.count | Should -BeGreaterOrEqual 1
-
-        }
-
         It 'Technique should start with T followed by 4 numbers | <Name>' -TestCases $testCases {
             param (
                 $file,
