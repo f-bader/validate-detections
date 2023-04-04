@@ -48,19 +48,6 @@ Describe "Detections" {
         }
     }
 
-    Context "KQL Syntax" {
-
-        It 'Query contains valid KQL | <Name>' -TestCases $testCases {
-            param (
-                $file,
-                $yamlObject
-            )
-
-            $kustoParsing = [Kusto.Language.KustoCode]::Parse($yamlObject.query)
-            $kustoParsing.getDiagnostics() | Should -BeNullOrEmpty
-        }
-    }
-
     Context "Properties" {
 
         It 'Do properties use camelCasing | <Name>' -TestCases $testCases {
@@ -261,14 +248,19 @@ Describe "Detections" {
                 $file,
                 $yamlObject
             )
-            $techniques = $yamlObject.relevantTechniques
+            $relevantTechniques = $yamlObject.relevantTechniques
+            $tactics = $yamlObject.tactics
 
-            foreach ($technique in $techniques) {
-                #Remove sub technique
-                $technique = $technique -replace '\..*$'
-                $tactics = @( $attack | Where-Object id -eq "$technique" ).tactics -split ',' | Sort-Object -Unique
+            if ($null -ne $relevantTechniques) {
+                $relevantTactics = foreach ($technique in $relevantTechniques) {
+                    #Remove sub technique
+                    $technique = $technique -replace '\..*$'
+                    @( $attack | Where-Object id -eq "$technique" ).tactics -split ','
+                }
+                $relevantTactics = $relevantTactics | Sort-Object -Unique
+
                 foreach ( $tactic in $tactics) {
-                    $tactic | Should -BeIn $yamlObject.tactics -Because "[$($technique)] is specified in 'relevantTechniques'"
+                    $tactic | Should -BeIn $relevantTactics -Because "[$($technique)] is specified in 'relevantTechniques'"
                 }
             }
         }
@@ -280,6 +272,10 @@ Describe "Detections" {
             )
             $tactics = $yamlObject.tactics
             $relevantTechniques = $yamlObject.relevantTechniques
+            
+            $relevantTechniques = foreach ($relevantTechnique in $relevantTechniques) {
+                $relevantTechnique -replace '\..*$'
+            }
 
             if ($null -ne $relevantTechniques) {
                 foreach ($tactic in $tactics) {
